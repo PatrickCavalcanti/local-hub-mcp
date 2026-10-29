@@ -116,6 +116,8 @@ Alternativa: baixe o GGUF à mão e coloque-o no caminho exato indicado pelo cam
 
 ### MCP
 
+Os exemplos usam a porta padrão `8079`. Se você mudou `porta` no `config.json`, troque `8079` pela sua porta em todos eles.
+
 O gerenciamento usa **Streamable HTTP** em `http://127.0.0.1:8079/mcp`. O serviço devolve uma `tarefa` em até `espera_s` (90 s por padrão); o timeout de chamada só precisa ser maior que esse intervalo, por exemplo **120 segundos**.
 
 Exemplo com Claude Code:
@@ -142,6 +144,23 @@ Configuração JSON genérica (a forma de registrar pode variar conforme o clien
 ```
 
 Se configurar `chaves`, envie o header `Authorization: Bearer <admin>` nas chamadas MCP, substituindo `<admin>` pelo valor de `chaves.admin`. Teste a conexão chamando `status` e `listar_modelos`.
+
+Para scripts, o SDK `mcp` já vem nas dependências do projeto. Exemplo mínimo em Python (salve como `cliente.py` e rode com `uv run python cliente.py` na pasta do projeto):
+
+```python
+import asyncio
+from mcp import ClientSession
+from mcp.client.streamable_http import streamable_http_client
+
+async def main():
+    async with streamable_http_client("http://127.0.0.1:8079/mcp") as (leitura, escrita):
+        async with ClientSession(leitura, escrita) as sessao:
+            await sessao.initialize()
+            r = await sessao.call_tool("status", {})
+            print(r.structuredContent or r.content)
+
+asyncio.run(main())
+```
 
 ### OpenAI
 
