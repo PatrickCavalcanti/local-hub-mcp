@@ -274,15 +274,34 @@ Allowed capabilities: `llm.chat`, `llm.vision`, `llm.fast`, `embedding`, `stt`, 
   "idioma": "pt",
   "pedaco_tts": 250,
   "pedaco_stt_s": 45.0,
-  "numeros_por_extenso": true
+  "numeros_por_extenso": false
 }
 ```
 
-`numeros_por_extenso` spells out numbers in words prior to TTS only for languages starting with `pt`. Use `editar_perfil(alias="voz", voz={"numeros_por_extenso": false})` to pass digits. Profiles without this field default to `true`.
+`numeros_por_extenso` turns on an example transformer; see [Transformers](#transformers).
 
 Each voice accepts `seed`, sent to the model, and `tom` (semitones) and `velocidade`, applied with ffmpeg. Example `vozes`: `{"male": {"tom": -1.5}}`.
 
 `criar_perfil` and `editar_perfil` immediately check that the GGUF (all parts if split) and `mmproj`, when specified, exist in `models_dir`. Download the weights before creating or editing the profile.
+
+### Transformers
+
+A transformer changes the text before it reaches the model. It is set per profile and stays off until the profile asks for it. It works around a flaw of a specific model without touching the client.
+
+The project ships one example transformer: `numeros_por_extenso`, in the `voz` block. It spells out numbers in Portuguese words before TTS. "3 tarefas" becomes "três tarefas"; money, percentages, dates and times too. It was made for LFM3, which misreads digits in Portuguese. It only acts when the language starts with `pt`.
+
+To turn it on for a profile:
+
+```text
+editar_perfil(alias="voz", voz={"numeros_por_extenso": true})
+```
+
+To write your own:
+
+1. Write a function that takes text and returns text in `src/local_hub_mcp/adaptador/`. Model: `numeros_pt.py`.
+2. Add a `bool` field defaulting to `False` to the profile block it affects. Model: `numeros_por_extenso` in `Voz`, in `perfis.py`.
+3. In the adapter, call the function where the text goes to the model, only when the field is on. Model: `adaptador/tts.py`.
+4. Cover it with a test. Model: `tests/test_adaptador.py`.
 
 ## Security
 
@@ -304,7 +323,7 @@ Tests use a mock `llama-server` and do not require a GPU. Tests marked `ffmpeg` 
 - 512 MB body limit depends on `Content-Length`; chunked body without this header has no such limit.
 - Download cannot be cancelled via MCP tool. An interrupted download leaves its temporary file in `models_dir/<folder>/.cache/huggingface/download/` and starts over next time.
 - Before the first measurement, the RAM check does not count the KV cache: with a large context (`-c`) and little free RAM, the system may page. The first load records the measurement and later loads count the KV cache; changing `flags` (including `-c`) discards it. If free RAM is low, reduce `-c`. On Linux/macOS, GPU profiles do not record a measurement (no per-process VRAM reading).
-- Number-to-words conversion for voice only works in Portuguese.
+- The example transformer `numeros_por_extenso` only handles Portuguese.
 - GPU planning only recognizes NVIDIA via `nvidia-smi`.
 - Linux/macOS have no Job Object and no VRAM overflow measurement; force-killing may leave processes running.
 - `/mcp` only accepts local calls.

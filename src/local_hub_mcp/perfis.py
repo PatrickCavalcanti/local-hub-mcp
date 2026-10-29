@@ -33,7 +33,7 @@ class Voz:
     idioma: str = "pt"
     pedaco_tts: int = 250
     pedaco_stt_s: float = 45.0
-    numeros_por_extenso: bool = True   # TTS em pt: troca números por palavras antes de mandar ao modelo
+    numeros_por_extenso: bool = False  # transformador de exemplo (TTS em pt): troca números por palavras antes do modelo
 
 
 @dataclass

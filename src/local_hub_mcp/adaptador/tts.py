@@ -1,7 +1,8 @@
 """TTS (/v1/audio/speech) pelo /tts do llama-server.
 
 Medido: o /tts para em 512 quadros (~41 s) -> texto em pedaços de ~250 caracteres; o modelo só tem as
-vozes do perfil (LFM3: female/male); o LFM3 lê número em dígito errado -> por extenso antes (pt; desliga com voz.numeros_por_extenso=false).
+vozes do perfil (LFM3: female/male). Transformador opcional por perfil: voz.numeros_por_extenso=true troca
+números por palavras antes do modelo (só pt; desligado por padrão). Foi feito para o LFM3, que lê dígito errado.
 Ajuste por voz (seed, tom em semitons, velocidade) aplicado depois com o ffmpeg.
 """
 from __future__ import annotations

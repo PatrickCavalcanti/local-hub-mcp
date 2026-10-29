@@ -274,15 +274,34 @@ Bloco `voz`, com os padrões:
   "idioma": "pt",
   "pedaco_tts": 250,
   "pedaco_stt_s": 45.0,
-  "numeros_por_extenso": true
+  "numeros_por_extenso": false
 }
 ```
 
-`numeros_por_extenso` converte números em palavras antes do TTS somente para idioma iniciado por `pt`. Use `editar_perfil(alias="voz", voz={"numeros_por_extenso": false})` para enviar dígitos. Perfis sem esse campo usam `true`.
+`numeros_por_extenso` liga um transformador de exemplo; veja [Transformadores](#transformadores).
 
 Cada voz aceita `seed`, enviado ao modelo, e `tom` (semitons) e `velocidade`, aplicados com o ffmpeg. Exemplo de `vozes`: `{"male": {"tom": -1.5}}`.
 
 `criar_perfil` e `editar_perfil` conferem na hora se o GGUF (todas as partes, se dividido) e o `mmproj`, quando informado, existem em `models_dir`. Baixe os pesos antes de criar ou editar o perfil.
+
+### Transformadores
+
+Um transformador muda o texto antes de ele chegar ao modelo. Ele vale por perfil e fica desligado até o perfil pedir. Serve para contornar o defeito de um modelo específico sem mexer no cliente.
+
+O projeto traz um transformador de exemplo: `numeros_por_extenso`, no bloco `voz`. Ele escreve os números por extenso antes do TTS. "3 tarefas" vira "três tarefas"; dinheiro, porcentagem, data e hora também. Foi feito para o LFM3, que lê dígitos errado em português. Só age quando o idioma começa com `pt`.
+
+Para ligar num perfil:
+
+```text
+editar_perfil(alias="voz", voz={"numeros_por_extenso": true})
+```
+
+Para criar o seu:
+
+1. Escreva uma função que recebe texto e devolve texto em `src/local_hub_mcp/adaptador/`. Modelo: `numeros_pt.py`.
+2. Crie um campo `bool` com padrão `False` no bloco do perfil que ele afeta. Modelo: `numeros_por_extenso` em `Voz`, no `perfis.py`.
+3. No adaptador, chame a função onde o texto segue para o modelo, só com o campo ligado. Modelo: `adaptador/tts.py`.
+4. Cubra com teste. Modelo: `tests/test_adaptador.py`.
 
 ## Segurança
 
@@ -304,7 +323,7 @@ Os testes usam um `llama-server` falso e não exigem GPU. Testes marcados `ffmpe
 - O limite de corpo de 512 MB depende de `Content-Length`; corpo chunked sem esse header não tem esse limite.
 - Download não tem cancelamento pela ferramenta MCP. Download interrompido deixa o temporário em `models_dir/<pasta>/.cache/huggingface/download/` e recomeça do zero na próxima vez.
 - Antes da primeira medição, a checagem de RAM não conta o KV cache: com contexto grande (`-c`) e pouca RAM livre, o sistema pode paginar. A primeira subida grava a medição, e as seguintes já contam o KV cache; mudar `flags` (inclusive `-c`) descarta a medição. Se a RAM livre for pouca, reduza `-c`. No Linux/macOS, perfis com GPU não gravam medição (sem leitura de VRAM por processo).
-- Conversão de números por extenso para voz só funciona em português.
+- O transformador de exemplo `numeros_por_extenso` só trata português.
 - Planejamento de GPU só reconhece NVIDIA via `nvidia-smi`.
 - Linux/macOS não têm Job Object nem medida de transbordo de VRAM; encerramento forçado pode deixar processos vivos.
 - `/mcp` só aceita chamadas locais.

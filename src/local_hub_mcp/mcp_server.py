@@ -191,7 +191,8 @@ def criar_mcp(ctx: Contexto) -> MCPServer:
         """Altera campos de um perfil existente; só os parâmetros informados mudam. Vale na próxima vez que ele subir.
         onde: 'gpu' | 'gpu+cpu' | 'cpu'. flags: lista com cada token separado, ex.: ["-c", "8192", "-ub", "512"]
         (substitui a lista inteira). mmproj: caminho relativo a models_dir; "" remove. voz: só as chaves que mudam,
-        ex.: {"idioma": "en"}. Em pt, {"numeros_por_extenso": false} manda os números em dígitos para a voz.
+        ex.: {"idioma": "en"}. Em pt, {"numeros_por_extenso": true} liga o transformador
+        que escreve os números por extenso antes da voz (desligado por padrão).
         O alias não muda (crie outro perfil). Mudar arquivo/onde/flags descarta a medição."""
         mudancas = {k: v for k, v in {"arquivo": arquivo, "onde": onde, "flags": flags, "capacidades": capacidades,
                                       "mmproj": mmproj, "anexos": anexos, "video": video, "voz": voz,

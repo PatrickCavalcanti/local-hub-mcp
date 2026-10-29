@@ -154,9 +154,9 @@ def test_alias_atual_e_reservado(maquina):
         validar(_perfil(alias="atual"), maquina["models"])
 
 
-def test_voz_sem_numeros_por_extenso_usa_padrao_ligado():
+def test_voz_sem_numeros_por_extenso_usa_padrao_desligado():
     from local_hub_mcp.perfis import Voz
-    assert Voz().numeros_por_extenso is True
+    assert Voz().numeros_por_extenso is False
     p = Perfil.de_dict({"alias": "v", "arquivo": "a/b.gguf", "onde": "cpu",
                         "voz": {"vozes": {"female": {}}, "idioma": "pt"}})
-    assert p.voz.numeros_por_extenso is True
+    assert p.voz.numeros_por_extenso is False
