@@ -303,7 +303,7 @@ Tests use a mock `llama-server` and do not require a GPU. Tests marked `ffmpeg` 
 - Inactive model receives 409 on `/v1`, with no on-demand loading; this includes boot while `subir_no_boot` is still loading.
 - 512 MB body limit depends on `Content-Length`; chunked body without this header has no such limit.
 - Download cannot be cancelled via MCP tool. An interrupted download leaves its temporary file in `models_dir/<folder>/.cache/huggingface/download/` and starts over next time.
-- Before the first measurement, the RAM check does not count the KV cache: with a large context (`-c`) and little free RAM, the system may page. Use `medir` or reduce `-c`.
+- Before the first measurement, the RAM check does not count the KV cache: with a large context (`-c`) and little free RAM, the system may page. Load it once with a smaller context (loading records the measurement) or reduce `-c`.
 - Number-to-words conversion for voice only works in Portuguese.
 - GPU planning only recognizes NVIDIA via `nvidia-smi`.
 - Linux/macOS have no Job Object and no VRAM overflow measurement; force-killing may leave processes running.

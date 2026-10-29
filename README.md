@@ -303,7 +303,7 @@ Os testes usam um `llama-server` falso e não exigem GPU. Testes marcados `ffmpe
 - Modelo fora do ar recebe 409 no `/v1`, sem carga sob demanda; isso inclui o boot enquanto `subir_no_boot` ainda carrega.
 - O limite de corpo de 512 MB depende de `Content-Length`; corpo chunked sem esse header não tem esse limite.
 - Download não tem cancelamento pela ferramenta MCP. Download interrompido deixa o temporário em `models_dir/<pasta>/.cache/huggingface/download/` e recomeça do zero na próxima vez.
-- Antes da primeira medição, a checagem de RAM não conta o KV cache: com contexto grande (`-c`) e pouca RAM livre, o sistema pode paginar. Use `medir` ou reduza `-c`.
+- Antes da primeira medição, a checagem de RAM não conta o KV cache: com contexto grande (`-c`) e pouca RAM livre, o sistema pode paginar. Suba uma vez com contexto menor (a subida grava a medição) ou reduza `-c`.
 - Conversão de números por extenso para voz só funciona em português.
 - Planejamento de GPU só reconhece NVIDIA via `nvidia-smi`.
 - Linux/macOS não têm Job Object nem medida de transbordo de VRAM; encerramento forçado pode deixar processos vivos.
