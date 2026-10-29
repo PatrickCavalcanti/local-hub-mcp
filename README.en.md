@@ -87,7 +87,7 @@ Or, on both systems:
 uv run local-hub-mcp --config config.json
 ```
 
-On first run without `perfis.json`, the service copies `perfis.exemplo.json`. There are three example recipes: `qwen3-4b`, `gemma3-4b`, and `voz`. Weights still need to be downloaded.
+On first run without `perfis.json`, the service copies `perfis.exemplo.json` from the folder of `config.json` (so keep the config in the project folder). There are three example recipes: `qwen3-4b`, `gemma3-4b`, and `voz`. Weights still need to be downloaded.
 
 The console displays the llama.cpp version, `/v1` and `/mcp` endpoints, profile count, detected ffmpeg, and Job Object mode. Without ffmpeg, it informs that voice and audio/video attachments are disabled. Keep the terminal open; use Ctrl+C to shut down cleanly.
 
@@ -157,7 +157,7 @@ async def main():
         async with ClientSession(leitura, escrita) as sessao:
             await sessao.initialize()
             r = await sessao.call_tool("status", {})
-            print(r.structuredContent or r.content)
+            print(r.content[0].text)  # o serviço responde com um texto JSON
 
 asyncio.run(main())
 ```
@@ -302,7 +302,8 @@ Tests use a mock `llama-server` and do not require a GPU. Tests marked `ffmpeg` 
 
 - Inactive model receives 409 on `/v1`, with no on-demand loading; this includes boot while `subir_no_boot` is still loading.
 - 512 MB body limit depends on `Content-Length`; chunked body without this header has no such limit.
-- Download cannot be cancelled via MCP tool.
+- Download cannot be cancelled via MCP tool. An interrupted download leaves its temporary file in `models_dir/<folder>/.cache/huggingface/download/` and starts over next time.
+- Before the first measurement, the RAM check does not count the KV cache: with a large context (`-c`) and little free RAM, the system may page. Use `medir` or reduce `-c`.
 - Number-to-words conversion for voice only works in Portuguese.
 - GPU planning only recognizes NVIDIA via `nvidia-smi`.
 - Linux/macOS have no Job Object and no VRAM overflow measurement; force-killing may leave processes running.

@@ -87,7 +87,7 @@ Ou, nos dois sistemas:
 uv run local-hub-mcp --config config.json
 ```
 
-Na primeira execução sem `perfis.json`, o serviço copia `perfis.exemplo.json`. São três receitas de exemplo: `qwen3-4b`, `gemma3-4b` e `voz`. Os pesos ainda precisam ser baixados.
+Na primeira execução sem `perfis.json`, o serviço copia `perfis.exemplo.json` da pasta do `config.json` (por isso a config fica na pasta do projeto). São três receitas de exemplo: `qwen3-4b`, `gemma3-4b` e `voz`. Os pesos ainda precisam ser baixados.
 
 A tela mostra a versão do llama.cpp, os endereços `/v1` e `/mcp`, a quantidade de perfis, o ffmpeg encontrado e o modo de Job Object. Sem ffmpeg, informa que voz e anexos de áudio/vídeo estão desligados. Deixe o terminal aberto; use Ctrl+C para encerrar normalmente.
 
@@ -157,7 +157,7 @@ async def main():
         async with ClientSession(leitura, escrita) as sessao:
             await sessao.initialize()
             r = await sessao.call_tool("status", {})
-            print(r.structuredContent or r.content)
+            print(r.content[0].text)  # o serviço responde com um texto JSON
 
 asyncio.run(main())
 ```
@@ -302,7 +302,8 @@ Os testes usam um `llama-server` falso e não exigem GPU. Testes marcados `ffmpe
 
 - Modelo fora do ar recebe 409 no `/v1`, sem carga sob demanda; isso inclui o boot enquanto `subir_no_boot` ainda carrega.
 - O limite de corpo de 512 MB depende de `Content-Length`; corpo chunked sem esse header não tem esse limite.
-- Download não tem cancelamento pela ferramenta MCP.
+- Download não tem cancelamento pela ferramenta MCP. Download interrompido deixa o temporário em `models_dir/<pasta>/.cache/huggingface/download/` e recomeça do zero na próxima vez.
+- Antes da primeira medição, a checagem de RAM não conta o KV cache: com contexto grande (`-c`) e pouca RAM livre, o sistema pode paginar. Use `medir` ou reduza `-c`.
 - Conversão de números por extenso para voz só funciona em português.
 - Planejamento de GPU só reconhece NVIDIA via `nvidia-smi`.
 - Linux/macOS não têm Job Object nem medida de transbordo de VRAM; encerramento forçado pode deixar processos vivos.
