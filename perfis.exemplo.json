@@ -1,0 +1,43 @@
+{
+  "perfis": [
+    {
+      "alias": "qwen3-4b",
+      "arquivo": "unsloth--qwen3-4b-instruct-2507/Qwen3-4B-Instruct-2507-Q4_K_M.gguf",
+      "mmproj": null,
+      "onde": "gpu",
+      "flags": ["-ngl", "999", "-c", "16384", "-np", "1", "-fa", "auto", "--jinja", "--temp", "0.7", "--top-p", "0.8", "--top-k", "20"],
+      "capacidades": ["llm.chat"],
+      "anexos": false,
+      "video": false,
+      "voz": null,
+      "notas": "Exemplo: chat, ~2,5 GB de VRAM. Baixe com baixar_modelo(repo_id='unsloth/Qwen3-4B-Instruct-2507-GGUF', arquivos=['Qwen3-4B-Instruct-2507-Q4_K_M.gguf']) e ajuste com medir.",
+      "medido": null
+    },
+    {
+      "alias": "gemma3-4b",
+      "arquivo": "ggml-org--gemma-3-4b-it/gemma-3-4b-it-Q4_K_M.gguf",
+      "mmproj": "ggml-org--gemma-3-4b-it/mmproj-model-f16.gguf",
+      "onde": "gpu",
+      "flags": ["-ngl", "999", "-c", "16384", "-np", "1", "-fa", "auto", "--jinja"],
+      "capacidades": ["llm.chat", "llm.vision"],
+      "anexos": false,
+      "video": false,
+      "voz": null,
+      "notas": "Exemplo: chat com imagem, ~3,5 GB de VRAM. Baixe com baixar_modelo(repo_id='ggml-org/gemma-3-4b-it-GGUF', arquivos=['gemma-3-4b-it-Q4_K_M.gguf', 'mmproj-model-f16.gguf']).",
+      "medido": null
+    },
+    {
+      "alias": "voz",
+      "arquivo": "liquidai--lfm3-omni-2b/LFM3-Omni-2B-Q4_K_M.gguf",
+      "mmproj": "liquidai--lfm3-omni-2b/mmproj-LFM3-Omni-2B-Q8_0.gguf",
+      "onde": "cpu",
+      "flags": ["-t", "4", "-c", "8192", "-np", "2", "-fa", "auto", "--jinja", "--reasoning", "off", "--temp", "0"],
+      "capacidades": ["audio.in", "stt", "tts"],
+      "anexos": true,
+      "video": false,
+      "voz": {"vozes": {"female": {}, "male": {"tom": -1.5}}, "idioma": "pt", "pedaco_tts": 250, "pedaco_stt_s": 45, "numeros_por_extenso": true},
+      "notas": "Exemplo: transcrição e fala só na CPU (~2-3 GB de RAM). Precisa do ffmpeg. Baixe com baixar_modelo(repo_id='LiquidAI/LFM3-Omni-2B-GGUF', arquivos=['LFM3-Omni-2B-Q4_K_M.gguf', 'mmproj-LFM3-Omni-2B-Q8_0.gguf']).",
+      "medido": null
+    }
+  ]
+}

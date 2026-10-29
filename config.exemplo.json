@@ -1,0 +1,14 @@
+{
+  "llama_cpp_dir": "C:/caminho/para/llama.cpp",
+  "models_dir": "C:/caminho/para/models",
+  "ffmpeg_dir": null,
+  "bind": "127.0.0.1",
+  "porta": 8079,
+  "portas_internas": [8180, 8199],
+  "chaves": {},
+  "perfis": "perfis.json",
+  "logs_dir": "logs",
+  "load_timeout_s": 600,
+  "espera_s": 90,
+  "subir_no_boot": []
+}
